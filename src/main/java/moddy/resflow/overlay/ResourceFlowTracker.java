@@ -530,16 +530,16 @@ public class ResourceFlowTracker extends Addable {
         if (HorizontalResourcePanel.showActiveHaulers) {
             for (ActiveTransport trans : activeTransports) {
                 // Skip rendering non-filtered haulers when shift-filtering by room
-                if (hoveredRoom != null && trans.destRoomIdx != hoveredRoom.index()) {
+                if (hoveredRoom != null && trans.destRoomIdx() != hoveredRoom.index()) {
                     continue;
                 }
 
-                int srcTx = trans.pixelX / C.TILE_SIZE;
-                int srcTy = trans.pixelY / C.TILE_SIZE;
+                int srcTx = trans.pixelX() / C.TILE_SIZE;
+                int srcTy = trans.pixelY() / C.TILE_SIZE;
                 renderConnectionArrow(r, it, tx, ty, zoomLevel,
                     srcTx, srcTy,
-                    trans.destTileX, trans.destTileY,
-                    trans.resource, COLOR_ACTIVE_HAUL);
+                    trans.destTileX(), trans.destTileY(),
+                    trans.resource(), COLOR_ACTIVE_HAUL);
             }
         }
     }
@@ -1135,7 +1135,6 @@ public class ResourceFlowTracker extends Addable {
             buildFlowConnectionsFromIndustry(currentTime);
 
             // Then build visible connections from ALL persistent flows (including newly added ones)
-            final double FLOW_TIMEOUT = 300.0; // Show flows seen in last 5 minutes
             for (FlowConnectionData flowData : persistentFlows.values()) {
                 if (!flowData.isActive(currentTime)) continue;
 
@@ -1443,10 +1442,10 @@ public class ResourceFlowTracker extends Addable {
         if (HorizontalResourcePanel.showActiveHaulers) {
             COLOR_ACTIVE_HAUL.bind();
             for (ActiveTransport trans : activeTransports) {
-                if (!shouldDisplayResource(trans.resource)) continue;
+                if (!shouldDisplayResource(trans.resource())) continue;
 
-                int x = absBounds.x1() + ((trans.pixelX - window.pixels().x1()) >> zoom);
-                int y = absBounds.y1() + ((trans.pixelY - window.pixels().y1()) >> zoom);
+                int x = absBounds.x1() + ((trans.pixelX() - window.pixels().x1()) >> zoom);
+                int y = absBounds.y1() + ((trans.pixelY() - window.pixels().y1()) >> zoom);
                 r.renderParticle(x, y);
             }
             COLOR.unbind();
@@ -2003,22 +2002,15 @@ public class ResourceFlowTracker extends Addable {
     /**
      * Represents an active transport (hauler carrying resources)
      */
-    private static class ActiveTransport {
-        int pixelX, pixelY;
-        int destTileX, destTileY;
-        int destRoomIdx = -1;
-        RESOURCE resource;
-        double amount;
-
-        ActiveTransport(int px, int py, int destTx, int destTy, int destIdx, RESOURCE res, double amt) {
-            this.pixelX = px;
-            this.pixelY = py;
-            this.destTileX = destTx;
-            this.destTileY = destTy;
-            this.destRoomIdx = destIdx;
-            this.resource = res;
-            this.amount = amt;
-        }
+    private record ActiveTransport(
+        int pixelX,
+        int pixelY,
+        int destTileX,
+        int destTileY,
+        int destRoomIdx,
+        RESOURCE resource,
+        double amount
+    ) {
     }
 
     private static class PulsedOpacity implements OPACITY {
@@ -2030,3 +2022,4 @@ public class ResourceFlowTracker extends Addable {
         }
     }
 }
+

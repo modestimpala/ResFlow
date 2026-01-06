@@ -199,6 +199,7 @@ public class ResourceFlowAnalyzer {
                         }
                     }
                 }
+
             }
 
             // 2. Single pass over all stockpiles for storage location counts
@@ -316,16 +317,16 @@ public class ResourceFlowAnalyzer {
 
             for (Integer entityId : completedHaulers) {
                 HaulerState state = activeHaulers.remove(entityId);
-                if (state != null && state.resource != null) {
+                if (state != null && state.resource() != null) {
                     // Record the completed trip
                     double distance = state.getDistance();
                     ResourceFlowData.FlowPathType pathType = categorizeFlowPath(
-                        state.startRoomType, state.destRoomType);
+                        state.startRoomType(), state.destRoomType());
 
-                    data.recordHaulTrip(state.resource, distance, pathType);
+                    data.recordHaulTrip(state.resource(), distance, pathType);
 
                     // Update active hauler count
-                    ResourceFlowData.ResourceFlowStats stats = data.getStats(state.resource);
+                    ResourceFlowData.ResourceFlowStats stats = data.getStats(state.resource());
                     stats.activeHaulers = Math.max(0, stats.activeHaulers - 1);
                 }
             }
@@ -661,28 +662,17 @@ public class ResourceFlowAnalyzer {
     /**
      * Tracks state of a single hauler for trip completion detection
      */
-    private static class HaulerState {
-        final int entityId;
-        RESOURCE resource;
-        int startTileX, startTileY;
-        int destTileX, destTileY;
-        double startTime;
-        RoomFlowType startRoomType;
-        RoomFlowType destRoomType;
-
-        HaulerState(int id, RESOURCE res, int sx, int sy, int dx, int dy, double time,
-                    RoomFlowType startType, RoomFlowType destType) {
-            this.entityId = id;
-            this.resource = res;
-            this.startTileX = sx;
-            this.startTileY = sy;
-            this.destTileX = dx;
-            this.destTileY = dy;
-            this.startTime = time;
-            this.startRoomType = startType;
-            this.destRoomType = destType;
-        }
-
+    private record HaulerState(
+        int entityId,
+        RESOURCE resource,
+        int startTileX,
+        int startTileY,
+        int destTileX,
+        int destTileY,
+        double startTime,
+        RoomFlowType startRoomType,
+        RoomFlowType destRoomType
+    ) {
         double getDistance() {
             int dx = destTileX - startTileX;
             int dy = destTileY - startTileY;

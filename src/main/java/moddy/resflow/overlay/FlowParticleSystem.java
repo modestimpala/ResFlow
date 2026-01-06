@@ -37,6 +37,13 @@ public class FlowParticleSystem {
     // Spawn tracking per connection (to limit particle density)
     private final Map<String, ConnectionSpawnData> spawnTracking = new HashMap<>();
 
+    // Cached colors to avoid per-call allocations in render/update hot paths.
+    private static final COLOR COLOR_PROD_TO_STORAGE = new ColorImp(100, 255, 150); // Green-cyan (harvest)
+    private static final COLOR COLOR_STORAGE_TO_CONS = new ColorImp(255, 150, 100); // Red-orange (delivery)
+    private static final COLOR COLOR_PROD_TO_CONS = new ColorImp(255, 255, 100);    // Yellow (direct)
+    private static final COLOR COLOR_STORAGE_TO_PROD = new ColorImp(150, 200, 255); // Blue (inputs)
+    private static final COLOR COLOR_UNKNOWN = new ColorImp(255, 200, 50);          // Gold (unknown)
+
     /**
      * Encode tile coordinates to a single long for HashMap key
      */
@@ -293,11 +300,11 @@ public class FlowParticleSystem {
      */
     private COLOR getColorForFlowType(ResourceFlowData.FlowPathType flowType) {
         return switch (flowType) {
-            case PROD_TO_STORAGE -> new ColorImp(100, 255, 150);   // Green-cyan (harvest)
-            case STORAGE_TO_CONS -> new ColorImp(255, 150, 100);   // Red-orange (delivery)
-            case PROD_TO_CONS -> new ColorImp(255, 255, 100);      // Yellow (direct)
-            case STORAGE_TO_PROD -> new ColorImp(150, 200, 255);   // Blue (inputs)
-            default -> new ColorImp(255, 200, 50);                 // Gold (unknown)
+            case PROD_TO_STORAGE -> COLOR_PROD_TO_STORAGE;
+            case STORAGE_TO_CONS -> COLOR_STORAGE_TO_CONS;
+            case PROD_TO_CONS -> COLOR_PROD_TO_CONS;
+            case STORAGE_TO_PROD -> COLOR_STORAGE_TO_PROD;
+            default -> COLOR_UNKNOWN;
         };
     }
 

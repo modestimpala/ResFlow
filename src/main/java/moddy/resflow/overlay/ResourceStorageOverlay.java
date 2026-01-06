@@ -853,11 +853,11 @@ public class ResourceStorageOverlay extends Addable {
                 "/" + totalStockpiles + " stockpiles, " + stockpilesWithResources + " have filtered resources");
 
         } catch (Exception e) {
-            snake2d.LOG.err("StorageOverlay rebuildCache critical error: " + e.getMessage());
-            if (ModConfig.DEBUG_LOGGING) {
-                e.printStackTrace();
-            }
-        }
+             snake2d.LOG.err("StorageOverlay rebuildCache critical error: " + e.getMessage());
+             if (ModConfig.DEBUG_LOGGING) {
+                snake2d.LOG.err("StorageOverlay rebuildCache exception: " + e);
+             }
+         }
     }
 
     /**

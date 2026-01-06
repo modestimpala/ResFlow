@@ -120,10 +120,11 @@ final class InstanceScript implements SCRIPT.SCRIPT_INSTANCE {
             debug("Successfully added mod buttons to minimap panel");
 
         } catch (Exception e) {
+            // Avoid noisy stack traces in normal play; keep details behind debug logging.
             LOG.err("ResFlow: Failed to inject minimap buttons: " + e.getMessage());
             if (ModConfig.DEBUG_LOGGING) {
-                e.printStackTrace();
-            }
+                snake2d.LOG.err("ResFlow: injectMinimapButtons exception: " + e);
+             }
         }
     }
 

@@ -47,7 +47,7 @@ public final class MainScript implements SCRIPT {
      */
     @Override
     public boolean forceInit() {
-        return SCRIPT.super.forceInit();
+        return true;
     }
 
     /**

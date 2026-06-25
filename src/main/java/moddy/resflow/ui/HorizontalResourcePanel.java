@@ -427,14 +427,9 @@ public class HorizontalResourcePanel extends GuiSection {
                     util.gui.misc.GMeter.render(r, util.gui.misc.GMeter.C_INACTIVE, fillRatio, body());
                 }
 
-                // Import threshold indicator
-                if (SETT.ROOMS().IMPORT.tally.capacity.get(res) > 0) {
-                    double threshold = SETT.ROOMS().IMPORT.tally.importWhenBelow.getD(res);
-                    if (threshold > 0) {
-                        int y1 = (int) (body().y1() + threshold * (body().height() - 2));
-                        COLOR.WHITE85.render(r, body().x1(), body().x2(), y1, y1 + 1);
-                    }
-                }
+                // Import threshold indicator removed in v71: the per-resource
+                // "import when below" threshold (ImportTally.importWhenBelow) no
+                // longer exists in the game's trade/import system.
 
                 // Track hover state
                 if (hoveredIs()) {

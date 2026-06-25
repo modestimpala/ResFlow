@@ -65,8 +65,8 @@ public class ModConfig {
      */
     public static void load() {
         try {
-            if (PATHS.CONFIG().exists("ResFlow")) {
-                Json json = new Json(PATHS.CONFIG().get("ResFlow"));
+            if (PATHS.CONFIG().init.exists("ResFlow")) {
+                Json json = new Json(PATHS.CONFIG().init.get("ResFlow"));
 
                 DEBUG_LOGGING = json.bool("DEBUG_LOGGING", DEBUG_LOGGING);
 
@@ -145,7 +145,7 @@ public class ModConfig {
                 "FLOW_PARTICLE_USE_GLOW: " + FLOW_PARTICLE_USE_GLOW + ",\n";
 
             // Write to file
-            java.io.FileWriter writer = new java.io.FileWriter(PATHS.CONFIG().get("ResFlow").toFile());
+            java.io.FileWriter writer = new java.io.FileWriter(PATHS.CONFIG().init.get("ResFlow").toFile());
             writer.write(sb);
             writer.close();
 

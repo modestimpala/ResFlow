@@ -5,6 +5,7 @@ import init.resources.RESOURCES;
 import init.sprite.UI.UI;
 import moddy.resflow.analysis.ResourceFlowAnalyzer;
 import moddy.resflow.analysis.ResourceFlowData;
+import moddy.resflow.analysis.TradeEconomics;
 import snake2d.SPRITE_RENDERER;
 import snake2d.util.color.ColorImp;
 import snake2d.util.gui.GuiSection;
@@ -224,7 +225,44 @@ public class AdvancedAnalyticsPanel extends GuiSection {
             }
         });
 
-        // Column 6: Recommendation
+        // Column 6: Trade (v71 market economics)
+        tb.column("Trade", 105, new GTableBuilder.GRowBuilder() {
+            @Override
+            public RENDEROBJ build(final GETTER<Integer> ier) {
+                GStat s = new GStat() {
+                    @Override
+                    public void update(GText text) {
+                        text.clear();
+                        RESOURCE res = RESOURCES.ALL().get(ier.get());
+
+                        int price = TradeEconomics.importPrice(res);
+                        if (price < 0) {
+                            // Not tradable / pricing unavailable
+                            text.add("-");
+                            return;
+                        }
+
+                        ResourceFlowData.ResourceFlowStats stats = analyzer.getData().getStats(res);
+                        int net = stats.netFlowPerDay;
+
+                        if (net > 0 && stats.productionSites > 0) {
+                            // Surplus: exporting the overflow earns ~price per unit
+                            text.color(COLOR_GOOD);
+                            text.add("sell ");
+                        } else if (net < 0 && stats.consumptionSites > 0) {
+                            // Deficit: importing to cover the gap costs ~price per unit
+                            text.color(COLOR_WARNING);
+                            text.add("buy ");
+                        }
+
+                        GFORMAT.i(text, price);
+                    }
+                };
+                return s.r();
+            }
+        });
+
+        // Column 7: Recommendation
         tb.column("Recommendation", 200, new GTableBuilder.GRowBuilder() {
             @Override
             public RENDEROBJ build(final GETTER<Integer> ier) {

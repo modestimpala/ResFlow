@@ -29,7 +29,7 @@ import java.util.Map;
 
 /**
  * Toggleable overlay showing resource storage amounts with visual scaling.
- * Highlights stockpile areas and shows resource icons and amounts.
+ * Highlights ENTIRE stockpile areas (not just center tiles).
  * Color-codes based on fill level: blue (low) -> green (medium) -> gold (high) -> red (full).
  */
 public class ResourceStorageOverlay extends Addable {
@@ -51,7 +51,7 @@ public class ResourceStorageOverlay extends Addable {
     private static final CharSequence ¤¤desc = "Shows stockpile fill levels. Blue=empty, Green=partial, Gold=high, Red=full.";
 
     static {
-        // Intentionally empty (TODO: localization?).
+        // Intentionally empty (localization hook could be added here).
     }
 
     // Cache for stockpile fill levels (stockpile index -> total amount)
@@ -853,11 +853,11 @@ public class ResourceStorageOverlay extends Addable {
                 "/" + totalStockpiles + " stockpiles, " + stockpilesWithResources + " have filtered resources");
 
         } catch (Exception e) {
-             snake2d.LOG.err("StorageOverlay rebuildCache critical error: " + e.getMessage());
-             if (ModConfig.DEBUG_LOGGING) {
-                snake2d.LOG.err("StorageOverlay rebuildCache exception: " + e);
-             }
-         }
+            snake2d.LOG.err("StorageOverlay rebuildCache critical error: " + e.getMessage());
+            if (ModConfig.DEBUG_LOGGING) {
+                e.printStackTrace();
+            }
+        }
     }
 
     /**

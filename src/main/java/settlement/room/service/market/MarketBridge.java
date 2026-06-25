@@ -1,13 +1,15 @@
 package settlement.room.service.market;
 
-import init.race.RACES;
-import init.race.RaceResources;
 import init.resources.RESOURCE;
 import settlement.room.main.RoomInstance;
 
 /**
  * Bridge class to allow access to MarketInstance from outside the package.
  * This is necessary because MarketInstance is package-private.
+ *
+ * As of v71 markets distribute resources through a RoomDistribution
+ * ({@code ROOM_MARKET.dist}); the old per-instance {@code uses()}/{@code amount()}
+ * methods on MarketInstance were removed.
  */
 public class MarketBridge {
 
@@ -19,7 +21,7 @@ public class MarketBridge {
     }
 
     /**
-     * Check if a market uses a specific resource
+     * Check if a market distributes a specific resource
      */
     public static boolean usesResource(RoomInstance instance, RESOURCE resource) {
         if (!(instance instanceof MarketInstance market)) {
@@ -27,16 +29,15 @@ public class MarketBridge {
         }
 
         try {
-            // Check if the market has any amount of this resource
-            RaceResources.RaceResource e = RACES.res().get(resource);
-            return market.uses(e);
+            // "all" holds every resource this market's distribution handles
+            return market.blueprintI().dist.all.contains(resource);
         } catch (Exception e) {
             return false;
         }
     }
 
     /**
-     * Get the amount of a resource in a market
+     * Get the amount of a resource currently stored in a market
      */
     public static int getAmount(RoomInstance instance, RESOURCE resource) {
         if (!(instance instanceof MarketInstance market)) {
@@ -44,8 +45,11 @@ public class MarketBridge {
         }
 
         try {
-            RaceResources.RaceResource e = RACES.res().get(resource);
-            return market.amount(e);
+            var dist = market.blueprintI().dist;
+            if (!dist.all.contains(resource)) {
+                return 0;
+            }
+            return dist.stored(resource).get(instance);
         } catch (Exception e) {
             return 0;
         }

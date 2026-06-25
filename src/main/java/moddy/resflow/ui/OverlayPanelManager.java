@@ -367,7 +367,7 @@ public class OverlayPanelManager {
             analyticsPanel.body().moveX1(C.WIDTH() - panelWidth * 2);
             analyticsPanel.body().moveY1(100); // Below top UI
 
-            int advPanelWidth = 550;
+            int advPanelWidth = 820;
             int advPanelHeight = 500;
             advancedAnalyticsPanel = new AdvancedAnalyticsPanel(analyzer, advPanelWidth, advPanelHeight);
             advancedAnalyticsPanel.body().moveX1((C.WIDTH() - advPanelWidth) / 2); // Center horizontally
